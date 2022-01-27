@@ -6,11 +6,13 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
+    public GameManager gm;
+
     public void TogglePause()
     {
-        this.gameObject.SetActive(!enabled);
+        gm.TogglePause();
     }
-
+    
     public void BackToMenu()
     {
         SceneManager.LoadScene(0); // We load build Index 0, our main menu -> Magic value because Unity is stupid
