@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    PauseInput pauseInput;
-    public GameObject pauseMenu;
+    [SerializeField] private GameObject pauseMenu;
+
+    private PauseInput pauseInput;
     bool m_Paused = false;
 
     private void Awake()
@@ -29,7 +28,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Used to toggle the paused state of the game
+    /// Toggle the paused state of the game.
     /// </summary>
     public void TogglePause()
     {
@@ -39,21 +38,25 @@ public class GameManager : MonoBehaviour
             PauseGame();
     }
 
-    // Stop time when in pause
-    void PauseGame()
+    /// <summary>
+    /// Pause the game and timeScale.
+    /// </summary>
+    private void PauseGame()
     {
         Debug.Log("We paused the game");
-        Time.timeScale = 0;
+        Time.timeScale = 0f;
         AudioListener.pause = true;
         pauseMenu.SetActive(true);
         m_Paused = true;
     }
 
-    // Start time again when resuming game
-    void ResumeGame()
+    /// <summary>
+    /// Resume the game and timeScale.
+    /// </summary>
+    private void ResumeGame()
     {
         Debug.Log("We resume the game");
-        Time.timeScale = 1;
+        Time.timeScale = 1f;
         AudioListener.pause = false;
         pauseMenu.SetActive(false);
         m_Paused = false;

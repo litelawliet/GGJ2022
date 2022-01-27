@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameManager gm;
+    [SerializeField] private GameManager gm;
 
     public void TogglePause()
     {
@@ -15,7 +12,8 @@ public class PauseMenu : MonoBehaviour
     
     public void BackToMenu()
     {
-        SceneManager.LoadScene(0); // We load build Index 0, our main menu -> Magic value because Unity is stupid
+        // Back to main menu at idx 0
+        SceneManager.LoadScene(0); 
     }
 
     public void QuitGame()
