@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 5851714063521734908}
   - component: {fileID: 5851714063521734909}
   - component: {fileID: 1481914684}
+  - component: {fileID: 1481914685}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -320,4 +321,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e547a2db646a746b52da71c9d7653a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitNexInputDuration: 0.5
+  moveWindowPercentage: 50
+  successfulBeatWindowPercentage: 30
+  onFireComboNeeded: 3
+--- !u!114 &1481914685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5851714063521734898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ffdace670f210c47a77e039185c6924, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
