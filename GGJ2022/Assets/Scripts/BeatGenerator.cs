@@ -19,7 +19,7 @@ public class BeatGenerator : MonoBehaviour
 
     void Start()
     {
-        OnBeatHandler = InvokeBeat;
+        OnBeatHandler += InvokeBeat;
     }
 
     void Update()
