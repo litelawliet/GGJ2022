@@ -11,9 +11,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float successfulBeatWindowPercentage = 30f;
     [SerializeField] private int onFireComboNeeded = 3;
 
-    private UserInput m_userInput;
+    private UserInput userInput;
     private GameObject playerGO;
-    private BeatGenerator m_beatGenerator;
+    private BeatGenerator beatGenerator;
     
     private float nextInputDuration = 0.5f;
     private float nextSuccessfulBeatDuration = 0.3f;
@@ -25,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     private bool successfulBeatMove = true;
     private bool onFire = false;
 
+    private int totalMissedBeats = 0;
+    private int missedBeatsCombo = 0;
+    private int totalSucceededBeats = 0;
     private int m_successfulBeatMoveCount;
     private int SuccessfulBeatMoveCount
     {
@@ -36,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 onFire = false;
             }
-            else if (m_successfulBeatMoveCount > 2)
+            else if (m_successfulBeatMoveCount >= onFireComboNeeded)
             {
                 onFire = true;
             }
@@ -45,10 +48,9 @@ public class PlayerMovement : MonoBehaviour
 
     private MeshRenderer playerMeshRenderer;
 
-    // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
-        m_userInput = new UserInput();
+        userInput = new UserInput();
 
         nextInputDurationTimer = new Timer();
         nextInputDurationTimer.Elapsed += NextInputDurationTimer_Elapsed;
@@ -58,20 +60,63 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-
     private void Start()
     {
         var bgGo = GameObject.FindGameObjectWithTag(tag:"BeatGenerator");
-        m_beatGenerator = bgGo.GetComponent<BeatGenerator>();
-        m_beatGenerator.OnBeatHandler += OnBeat;
+        beatGenerator = bgGo.GetComponent<BeatGenerator>();
+        beatGenerator.OnBeatHandler += OnBeat;
 
-        m_userInput.Player.Move.performed += Move_performed;
+        userInput.Player.Move.performed += Move_performed;
 
         playerGO = transform.gameObject;
         playerMeshRenderer = playerGO.GetComponent<MeshRenderer>();
         playerMeshRenderer.material.color = Color.white;
     }
 
+    private void Update()
+    {
+        if (successfulBeatMove)
+        { 
+            playerMeshRenderer.material.color = Color.yellow;
+        }
+        else if (inputAllowed)
+        {
+            playerMeshRenderer.material.color = Color.blue;
+        }
+        else
+        {
+            playerMeshRenderer.material.color = Color.white;
+        }
+    }
+
+    #region Public API
+    public int GetTotalBeatsSucceeded()
+    {
+        return totalSucceededBeats;
+    }
+
+    public int GetTotalBeatsMissed()
+    {
+        return totalMissedBeats;
+    }
+
+    public int GetMissedBeatCombo()
+    {
+        return missedBeatsCombo;
+    }
+
+    public int GetSuccessfulBeatMultiplicator()
+    {
+        return SuccessfulBeatMoveCount;
+    }
+
+    public bool IsOnFire()
+    {
+        return onFire;
+    }
+    #endregion
+
+    #region Events
     private void Move_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
         nextInputDurationTimer.Stop();
@@ -79,6 +124,9 @@ public class PlayerMovement : MonoBehaviour
 
         if ((timeoutInputFinished && inputAllowed) && playerGO)
         {
+            ++totalSucceededBeats;
+            missedBeatsCombo = 0;
+
             if (successfulBeatMove)
             {
                 ++SuccessfulBeatMoveCount;
@@ -97,29 +145,11 @@ public class PlayerMovement : MonoBehaviour
             playerGO.transform.Translate(value.x, 0.0f, value.y);
 
             playerMeshRenderer.material.color = Color.white;
-            
+
             StartCoroutine(TimeoutInput(nextInputDuration));
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (successfulBeatMove)
-        { 
-            playerMeshRenderer.material.color = Color.yellow;
-        }
-        else if (inputAllowed)
-        {
-            playerMeshRenderer.material.color = Color.blue;
-        }
-        else
-        {
-            playerMeshRenderer.material.color = Color.white;
-        }
-    }
-
-    #region Events
     IEnumerator TimeoutInput(float duration)
     {
         timeoutInputFinished = false;
@@ -136,6 +166,8 @@ public class PlayerMovement : MonoBehaviour
     private void NextInputDurationTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
         inputAllowed = false;
+        ++totalMissedBeats;
+        ++missedBeatsCombo; // TODO: This is a combo, do we need a maximum ?
     }
 
     private void NextSuccesfulBeatDurationTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -146,12 +178,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        m_userInput.Enable();
+        userInput.Enable();
     }
 
     private void OnDisable()
     {
-        m_userInput.Disable();
+        userInput.Disable();
     }
 
     private void OnBeat(float nextBeatDuration)
@@ -187,6 +219,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        m_beatGenerator.OnBeatHandler -= OnBeat;
+        beatGenerator.OnBeatHandler -= OnBeat;
     }
 }
