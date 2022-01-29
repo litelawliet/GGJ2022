@@ -3,12 +3,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenu;
-
+    [SerializeField] private GameObject BeatGeneratorPrefab;
     private PauseInput pauseInput;
     bool m_Paused = false;
 
+    private GameObject m_Generator;
+
     private void Awake()
     {
+        m_Generator = Instantiate(BeatGeneratorPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         pauseInput = new PauseInput(); 
     }
 
@@ -46,7 +49,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("We paused the game");
         Time.timeScale = 0f;
         AudioListener.pause = true;
-        pauseMenu.SetActive(true);
+        if (pauseMenu)
+        {
+            pauseMenu.SetActive(true);
+        }
         m_Paused = true;
     }
 
@@ -55,10 +61,18 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ResumeGame()
     {
-        Debug.Log("We resume the game");
+        Debug.Log("We resume the gameS");
         Time.timeScale = 1f;
         AudioListener.pause = false;
-        pauseMenu.SetActive(false);
+        if (pauseMenu)
+        {
+            pauseMenu.SetActive(false);
+        }
         m_Paused = false;
+    }
+
+    GameObject GetBeatGenerator()
+    {
+        return m_Generator;
     }
 }
